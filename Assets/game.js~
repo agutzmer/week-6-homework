@@ -1,0 +1,93 @@
+
+ // global variables 
+
+//
+// objects and functions
+//
+
+//
+// Begin activity
+//
+  var topics = [ "bear", "lion", "horse", "skunk", "cow", "border collie"];
+  var topicCounter;
+
+  for (topicCounter = 0; topicCounter < topics.length; topicCounter++) {
+
+		var btn = document.createElement("button");        // Create a <button> element
+		btn.id = topics [ topicCounter ];
+		var temp = document.createTextNode(topics [ topicCounter ]);       // Create a text node
+		btn.appendChild(temp);                              
+		document.getElementById("buttons").appendChild(btn);  // Append the text to <button>
+		}        
+
+	 $("button").on('click', function() { 	
+	 	
+		var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + this.id + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+
+  //  <img src="http://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200_s.gif" data-still="http://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200_s.gif" data-animate="http://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200.gif" data-state="still" class="animalImage">
+
+        $.ajax({
+                url: queryURL,
+                method: 'GET'
+            })
+            .done(function(response) {
+            		
+                var results = response.data;
+
+               for (var i = 0; i < results.length; i++) {
+
+               
+                  var gifDiv = $("<div></div>");          //create a div for the image
+                  $(gifDiv).css("padding", 10);           //10 px padding
+                  $(gifDiv).css("float", "left");         // float left
+                
+                  var gifDivImage = $("<img></img>");     //build up the image params for display
+                  $(gifDivImage).attr("src", results[i].images.fixed_height_still.url);
+                  $(gifDivImage).attr("data-still", results[i].images.fixed_height_still.url);
+                  $(gifDivImage).attr("data-animate", results[i].images.fixed_height.url);
+                  $(gifDivImage).attr("data-state", "still");
+                  $(gifDivImage).attr("class", "animalImage");                
+
+                  $(gifDiv).append(gifDivImage);  //append the completed image to the div 
+
+                  var rating = results[i].rating;  //add the image rating to the div
+                  var p = $('<div>').text("Rating: " + rating );
+                  $(gifDiv).append(p);  
+
+                  $('#gifs').append(gifDiv);
+
+                } // end for
+
+
+              $('.animalImage').on('click', function() {    //WHY $(this)  ??????????????
+                var state = $(this).attr('data-state'); 
+                   if ( state == 'still'){
+                       $(this).attr('src', $(this).data('animate'));
+                       $(this).attr('data-state', 'animate');
+                  }else{
+                       $(this).attr('src', $(this).data('still'));
+                       $(this).attr('data-state', 'still');
+                   }
+                });
+               
+              } );  // end .done
+
+	 } );  //end onClick
+
+
+
+
+
+
+//  $('.flipflop').on('click', function() {
+//          debugger; 
+//  });
+
+//	$('#gifs').on('click', function() {
+//			debugger; 
+//	});
+
+
+
+  
